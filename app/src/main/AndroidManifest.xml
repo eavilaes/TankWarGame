@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.github.eavilaes.tankwargame">
 
     <application
@@ -9,7 +10,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".GameActivity"></activity>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="sensorLandscape"
+            tools:ignore="LockedOrientationActivity"> <!-- To run app in landscape mode -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
