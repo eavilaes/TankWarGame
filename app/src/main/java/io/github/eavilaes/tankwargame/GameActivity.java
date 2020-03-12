@@ -11,6 +11,8 @@ import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 public class GameActivity extends AppCompatActivity {
 
+    private static final float speedMultiplier = 0.075f;
+
     private static final String LOG_TAG = "GameActivity";
     private static ImageView tank_player;
 
@@ -35,6 +37,11 @@ public class GameActivity extends AppCompatActivity {
             public void onMove(int angle, int strength) {
                 Log.d(LOG_TAG, "joystick move. Angle:" + angle);
                 tank_player.setRotation(90-angle);
+                double x = Math.cos(Math.toRadians(angle));
+                double y = Math.sin(Math.toRadians(angle));
+                Log.d(LOG_TAG, "x: " + x + "   y: " + y);
+                tank_player.setX(tank_player.getX()+(float)x * strength * speedMultiplier);
+                tank_player.setY(tank_player.getY()+(float)-y * strength * speedMultiplier);
             }
         });
 

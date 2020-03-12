@@ -39,4 +39,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(game);
         Log.d(LOG_TAG, "Game finished");
     }
+
+    public void settingsButtonPressed(View view) {
+        Log.d(LOG_TAG, "Settings button pressed");
+        //TODO settings screen
+    }
 }
