@@ -7,7 +7,7 @@
     tools:context=".GameActivity">
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/tank_player"
         android:layout_width="50dp"
         android:layout_height="30dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -23,4 +23,21 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:onClick="finishGame"/>
+
+    <io.github.controlwear.virtual.joystick.android.JoystickView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/joystick"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        custom:JV_buttonColor="#FF6E40"
+        custom:JV_buttonSizeRatio="30%"
+        custom:JV_borderColor="#00796B"
+        custom:JV_backgroundColor="#009688"
+        custom:JV_borderWidth="4dp"
+        custom:JV_fixedCenter="true"
+        custom:layout_constraintBottom_toBottomOf="parent"
+        custom:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginStart="15dp"
+        android:layout_marginBottom="10dp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
