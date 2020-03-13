@@ -18,15 +18,6 @@ public class GameSelectionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_selection);
     }
 
-    public void comingSoonPopup(View view) {
-        Context context = getApplicationContext();
-        String message = "Coming Soon!";
-        int duration = Toast.LENGTH_SHORT;
-
-        Toast toast = Toast.makeText(context, message, duration);
-        toast.show();
-    }
-
     public void playGameLocal(View view) {
         Intent game = new Intent(this, GameActivity.class);
         startActivity(game);

@@ -1,6 +1,7 @@
 package io.github.eavilaes.tankwargame;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 
 import android.graphics.Point;
 import android.os.Bundle;
@@ -66,7 +67,7 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    void finishGame(View view) {
+    public void finishGame(View view) {
         finish();
     }
 
@@ -81,4 +82,31 @@ public class GameActivity extends AppCompatActivity {
             return false;
         return true;
     }
+
+    public void pauseGame(View view) {
+        onPause();
+    }
+
+    public void resumeGame(View view) {
+        onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        findViewById(R.id.quitButton).setVisibility(View.VISIBLE);
+        findViewById(R.id.resumeButton).setVisibility(View.VISIBLE);
+        findViewById(R.id.joystick).setEnabled(false);
+        findViewById(R.id.pauseButton).setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        findViewById(R.id.quitButton).setVisibility(View.INVISIBLE);
+        findViewById(R.id.resumeButton).setVisibility(View.INVISIBLE);
+        findViewById(R.id.joystick).setEnabled(true);
+        findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
+    }
+
 }

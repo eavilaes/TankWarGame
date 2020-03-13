@@ -27,15 +27,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/player_vs_cpu"
-            android:enabled="false"
-            android:onClick="comingSoonPopup"/>
+            android:enabled="false"/>
 
         <Button
             android:id="@+id/button_playmp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/_1vs1_online"
-            android:enabled="false"
-            android:onClick="comingSoonPopup"/>
+            android:enabled="false"/>
     </TableRow>
 </TableLayout>
