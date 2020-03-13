@@ -14,16 +14,28 @@
         android:text="@string/app_name"
         android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/username_local"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="@string/new_user"
-        android:textSize="18sp" />
+        android:layout_marginLeft="16dp">
+
+        <TextView
+            android:id="@+id/welcome_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/welcome_back"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/username_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:text="@string/new_user"
+            android:textSize="18sp" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/settings_button"
