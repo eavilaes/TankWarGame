@@ -2,12 +2,10 @@ package io.github.eavilaes.tankwargame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 public class GameSelectionActivity extends AppCompatActivity {
 
@@ -19,7 +17,7 @@ public class GameSelectionActivity extends AppCompatActivity {
     }
 
     public void playGameLocal(View view) {
-        Intent game = new Intent(this, GameActivity.class);
+        Intent game = new Intent(this, LocalGameActivity.class);
         startActivity(game);
     }
 }

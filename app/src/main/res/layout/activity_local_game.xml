@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".GameActivity">
+    tools:context=".LocalGameActivity">
 
     <ImageView
         android:id="@+id/tank_player"
@@ -13,8 +13,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:srcCompat="@drawable/tank1_blue"
-        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="20dp"/>
+
+    <ImageView
+        android:id="@+id/tank_player2"
+        android:layout_width="30dp"
+        android:layout_height="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:srcCompat="@drawable/tank1_red"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/quitButton"
@@ -71,7 +81,25 @@
         custom:JV_fixedCenter="true"
         custom:layout_constraintBottom_toBottomOf="parent"
         custom:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="15dp"
+        android:layout_marginLeft="15dp"
         android:layout_marginBottom="10dp" />
+
+    <io.github.controlwear.virtual.joystick.android.JoystickView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/joystick2"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        custom:JV_buttonColor="#FF6E40"
+        custom:JV_buttonSizeRatio="30%"
+        custom:JV_borderColor="#00796B"
+        custom:JV_borderAlpha="50"
+        custom:JV_backgroundColor="#009688"
+        custom:JV_backgroundSizeRatio="50%"
+        custom:JV_borderWidth="40dp"
+        custom:JV_fixedCenter="true"
+        custom:layout_constraintTop_toTopOf="parent"
+        custom:layout_constraintRight_toRightOf="parent"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="10dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

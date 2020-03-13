@@ -18,7 +18,7 @@
             android:screenOrientation="sensorLandscape"
             tools:ignore="LockedOrientationActivity" />
         <activity
-            android:name=".GameActivity"
+            android:name=".LocalGameActivity"
             android:screenOrientation="sensorLandscape"
             tools:ignore="LockedOrientationActivity" />
         <activity
