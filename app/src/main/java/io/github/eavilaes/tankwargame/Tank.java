@@ -3,7 +3,7 @@ package io.github.eavilaes.tankwargame;
 import android.util.Log;
 import android.widget.ImageView;
 
-public class Tank {
+class Tank {
 
     private static final String LOG_TAG = "Tank";
     private static Tank singleton = null;
@@ -16,41 +16,37 @@ public class Tank {
         Log.d(LOG_TAG, "private Tank()");
     }
 
-    public static Tank getInstance(){
+    static Tank getInstance(){
         if (singleton==null)
             singleton = new Tank();
         return singleton;
     }
 
-    static void setImageView(ImageView tank_player){
+    void setImageView(ImageView tank_player){
         Tank.tank_player = tank_player;
     }
 
-    static ImageView getImageView(){
-        return Tank.tank_player;
-    }
-
-    static void setRotation(int angle){
+    void setRotation(int angle){
         Tank.tank_player.setRotation(angle);
     }
 
-    int getRotation(){
+    int ygetRotation(){
         return (int)Tank.tank_player.getRotation();
     }
 
-    static void setX(float x){
+    void setX(float x){
         Tank.tank_player.setX(x);
     }
 
-    static float getX(){
+    float getX(){
         return Tank.tank_player.getX();
     }
 
-    static void setY(float y){
+    void setY(float y){
         Tank.tank_player.setY(y);
     }
 
-    static float getY(){
+    float getY(){
         return Tank.tank_player.getY();
     }
 }

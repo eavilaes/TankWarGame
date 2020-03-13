@@ -31,50 +31,54 @@ public class GameActivity extends AppCompatActivity {
         W = size.x;
         H = size.y;
 
-        Tank.setImageView((ImageView) findViewById(R.id.tank_player));
-        Tank.setRotation(90);
+        Tank.getInstance().setImageView((ImageView) findViewById(R.id.tank_player));
+        Tank.getInstance().setRotation(90);
 
         //Enable fullscreen to hide status bar.
         //Action bar is already hidden because of the app's theme.
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         //Create joystick for tank's movement
-        final JoystickView joystick = (JoystickView) findViewById(R.id.joystick);
+        final JoystickView joystick = findViewById(R.id.joystick);
         joystick.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                Log.d(LOG_TAG, "joystick move. Angle:" + angle);
-                Tank.setRotation(90-angle);
+                //Log.d(LOG_TAG, "joystick move. Angle:" + angle);
+                Tank.getInstance().setRotation(90-angle);
                 double x = Math.cos(Math.toRadians(angle));
                 double y = Math.sin(Math.toRadians(angle));
-                Log.d(LOG_TAG, "x: " + x + "   y: " + y);
-                float newX = Tank.getX()+(float)x * strength * Tank.speedMultiplier;
-                float newY = Tank.getY()+(float)-y * strength * Tank.speedMultiplier;
+                //Log.d(LOG_TAG, "x: " + x + "   y: " + y);
+                float newX = Tank.getInstance().getX()+(float)x * strength * Tank.speedMultiplier;
+                float newY = Tank.getInstance().getY()+(float)-y * strength * Tank.speedMultiplier;
 
-                if(newX>20 && newX<W-115) {
-                    if(!coll)
-                        Tank.setX(newX);
-                    else
-                        Tank.setX(Tank.getX()+(float)x * strength * Tank.speedMultiplier/2);
-                    coll=false;
-                }
+                boolean collX = checkCollisionX(newX);
+                boolean collY = checkCollisionY(newY);
+
+                if(!collX && !collY){
+                    Tank.getInstance().setX(newX);
+                    Tank.getInstance().setY(newY);
+                }else if(!collX)
+                    Tank.getInstance().setX(Tank.getInstance().getX()+(float)x * strength * Tank.speedMultiplier / 2);
                 else
-                    coll=true;
-                if(newY>0 && newY<H-140) {
-                    if (!coll)
-                        Tank.setY(newY);
-                    else
-                        Tank.setY(Tank.getY() + (float) -y * strength * Tank.speedMultiplier / 2);
-                    coll=false;
-                }
-                else
-                    coll=true;
+                    Tank.getInstance().setY(Tank.getInstance().getY() + (float) -y * strength * Tank.speedMultiplier / 2);
             }
         });
 
     }
 
-    public void finishGame(View view) {
+    void finishGame(View view) {
         finish();
+    }
+
+    boolean checkCollisionX(float newX){
+        if(newX>20 && newX<W-115)  //TODO: Try to change it for the tank's dimensions.
+            return false;
+        return true;
+    }
+
+    boolean checkCollisionY(float newY){
+        if(newY>0 && newY<H-140)
+            return false;
+        return true;
     }
 }
