@@ -17,11 +17,9 @@ public class GameActivity extends AppCompatActivity {
     private int W;
     private int H;
 
-    private static final float speedMultiplier = 0.075f; //Default: 0.075f
     private Boolean coll=false;
 
     private static final String LOG_TAG = "GameActivity";
-    private static ImageView tank_player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +31,8 @@ public class GameActivity extends AppCompatActivity {
         W = size.x;
         H = size.y;
 
-        tank_player = (ImageView) findViewById(R.id.tank_player);
-        tank_player.setRotation(90);
+        Tank.setImageView((ImageView) findViewById(R.id.tank_player));
+        Tank.setRotation(90);
 
         //Enable fullscreen to hide status bar.
         //Action bar is already hidden because of the app's theme.
@@ -46,27 +44,27 @@ public class GameActivity extends AppCompatActivity {
             @Override
             public void onMove(int angle, int strength) {
                 Log.d(LOG_TAG, "joystick move. Angle:" + angle);
-                tank_player.setRotation(90-angle);
+                Tank.setRotation(90-angle);
                 double x = Math.cos(Math.toRadians(angle));
                 double y = Math.sin(Math.toRadians(angle));
                 Log.d(LOG_TAG, "x: " + x + "   y: " + y);
-                float newX = tank_player.getX()+(float)x * strength * speedMultiplier;
-                float newY = tank_player.getY()+(float)-y * strength * speedMultiplier;
+                float newX = Tank.getX()+(float)x * strength * Tank.speedMultiplier;
+                float newY = Tank.getY()+(float)-y * strength * Tank.speedMultiplier;
 
                 if(newX>20 && newX<W-115) {
                     if(!coll)
-                        tank_player.setX(newX);
+                        Tank.setX(newX);
                     else
-                        tank_player.setX(tank_player.getX()+(float)x * strength * speedMultiplier/2);
+                        Tank.setX(Tank.getX()+(float)x * strength * Tank.speedMultiplier/2);
                     coll=false;
                 }
                 else
                     coll=true;
                 if(newY>0 && newY<H-140) {
                     if (!coll)
-                        tank_player.setY(newY);
+                        Tank.setY(newY);
                     else
-                        tank_player.setY(tank_player.getY() + (float) -y * strength * speedMultiplier / 2);
+                        Tank.setY(Tank.getY() + (float) -y * strength * Tank.speedMultiplier / 2);
                     coll=false;
                 }
                 else
