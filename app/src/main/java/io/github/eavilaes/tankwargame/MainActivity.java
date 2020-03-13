@@ -43,9 +43,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void playButtonPressed(View view) {
         Log.d(LOG_TAG, "Play button pressed");
-        Intent game = new Intent(this, GameActivity.class);
-        startActivity(game);
-        Log.d(LOG_TAG, "Game finished");
+        Intent gameSelection = new Intent(this, GameSelectionActivity.class);
+        startActivity(gameSelection);
     }
 
     public void settingsButtonPressed(View view) {

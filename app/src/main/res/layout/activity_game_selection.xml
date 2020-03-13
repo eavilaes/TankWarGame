@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GameSelectionActivity"
+    android:gravity="center">
+
+    <TableRow
+        android:id="@+id/row2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:gravity="center">
+
+
+        <Button
+            android:id="@+id/button_playlocal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_1vs1_local"
+            android:onClick="playGameLocal"/>
+
+        <Button
+            android:id="@+id/button_playcpu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/player_vs_cpu"
+            android:enabled="false"
+            android:onClick="comingSoonPopup"/>
+
+        <Button
+            android:id="@+id/button_playmp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/_1vs1_online"
+            android:enabled="false"
+            android:onClick="comingSoonPopup"/>
+    </TableRow>
+</TableLayout>
