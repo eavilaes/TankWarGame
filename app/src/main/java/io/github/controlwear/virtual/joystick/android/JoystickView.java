@@ -446,11 +446,12 @@ public class JoystickView extends View
 
             // re-center the button or not (depending on settings)
             if (mAutoReCenterButton) {
+                int lastAngle = getAngle(); //To avoid resetting to angle = 0
                 resetButtonPosition();
 
                 // update now the last strength and angle which should be zero after resetButton
                 if (mCallback != null)
-                    mCallback.onMove(getAngle(), getStrength());
+                    mCallback.onMove(lastAngle, getStrength());
             }
 
             // if mAutoReCenterButton is false we will send the last strength and angle a bit

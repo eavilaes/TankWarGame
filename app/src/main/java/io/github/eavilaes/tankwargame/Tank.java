@@ -8,7 +8,7 @@ public class Tank {
     private static final String LOG_TAG = "Tank";
     private static Tank singleton = null;
 
-    static final float speedMultiplier = 0.075f; //Default: 0.075f
+    static final float speedMultiplier = 0.1f; //Default: 0.1f
     private static ImageView tank_player;
 
 
