@@ -16,8 +16,6 @@ public class LocalGameActivity extends AppCompatActivity {
     private int W;
     private int H;
 
-    private Boolean coll=false;
-
     private static final String LOG_TAG = "LocalGameActivity";
 
     @Override
@@ -99,15 +97,11 @@ public class LocalGameActivity extends AppCompatActivity {
     }
 
     boolean checkCollisionX(float newX){
-        if(newX>20 && newX<W-115)  //TODO: Try to change it for the tank's dimensions.
-            return false;
-        return true;
+        return !(newX > 20) || !(newX < W - 115);   //TODO: Try to change it for the tank's dimensions.
     }
 
     boolean checkCollisionY(float newY){
-        if(newY>0 && newY<H-140)
-            return false;
-        return true;
+        return !(newY > 0) || !(newY < H - 140);
     }
 
     public void pauseGame(View view) {

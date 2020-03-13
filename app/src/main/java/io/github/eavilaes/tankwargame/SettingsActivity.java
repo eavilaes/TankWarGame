@@ -25,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
 
         sharedPreferences = getSharedPreferences("SETTINGS_FILE", MODE_PRIVATE);
-        username = (EditText)findViewById(R.id.nameEditText);
+        username = findViewById(R.id.nameEditText);
         String username_local = sharedPreferences.getString("username_local", "Player");
         username.setText(username_local);
     }

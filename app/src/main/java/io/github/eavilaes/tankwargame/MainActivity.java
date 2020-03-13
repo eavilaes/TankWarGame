@@ -13,12 +13,8 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private static final int SETTINGS_REQUEST = 10;
-    private static SharedPreferences sharedPreferences;
     private static TextView username_textview;
     private static final String LOG_TAG = "MainActivity";
-
-    private static View decorView;
-    private static int uiOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +30,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Print the stored username in the main screen (if any)
-        sharedPreferences = getSharedPreferences("SETTINGS_FILE", MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences("SETTINGS_FILE", MODE_PRIVATE);
         String username = sharedPreferences.getString("username_local", "Player");
-        username_textview= (TextView)findViewById(R.id.username_local);
+        username_textview= findViewById(R.id.username_local);
         username_textview.setText(username);
 
     }
