@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
@@ -22,6 +21,8 @@ public class LocalGameActivity extends AppCompatActivity {
     private int W;
     private int H;
 
+    Tank player1, player2;
+
     private static final String LOG_TAG = "LocalGameActivity";
 
     @Override
@@ -29,70 +30,64 @@ public class LocalGameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_game);
 
+        //Enable fullscreen to hide status bar. Action bar is already hidden because of the app's theme.
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         //Get size of the screen to set limits
         getWindowManager().getDefaultDisplay().getSize(size);
         W = size.x;
         H = size.y;
 
-        Tank.getPlayer().setPlayerImageView((ImageView) findViewById(R.id.tank_player));
-        Tank.getPlayer().setPlayerRotation(90);
-
-        Tank.getPlayer2().setPlayer2ImageView((ImageView) findViewById(R.id.tank_player2));
-        Tank.getPlayer2().setPlayer2Rotation(270);
-
-        //Enable fullscreen to hide status bar.
-        //Action bar is already hidden because of the app's theme.
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        player1 = new Tank((ImageView)findViewById(R.id.tank_player));
+        player2 = new Tank((ImageView)findViewById(R.id.tank_player2));
+        player1.setRotation(90);
+        player2.setRotation(270);
 
         //Create joystick for tank's movement
-        final JoystickView joystick = findViewById(R.id.joystick);
-        joystick.setOnMoveListener(new JoystickView.OnMoveListener() {
+        final JoystickView joystickP1 = findViewById(R.id.joystick);
+        joystickP1.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                //Log.d(LOG_TAG, "joystick move. Angle:" + angle);
-                Tank.getPlayer().setPlayerRotation(90-angle);
+                player1.setRotation(90-angle);
                 double x = Math.cos(Math.toRadians(angle));
                 double y = Math.sin(Math.toRadians(angle));
-                //Log.d(LOG_TAG, "x: " + x + "   y: " + y);
-                float newX = Tank.getPlayer().getPlayerX()+(float)x * strength * Tank.speedMultiplier;
-                float newY = Tank.getPlayer().getPlayerY()+(float)-y * strength * Tank.speedMultiplier;
+                float newX = player1.getPosX()+(float)x * strength * Tank.speedMultiplier;
+                float newY = player1.getPosY()+(float)-y * strength * Tank.speedMultiplier;
 
                 boolean collX = checkCollisionX(newX);
                 boolean collY = checkCollisionY(newY);
 
-                if(!collX && !collY){
-                    Tank.getPlayer().setPlayerX(newX);
-                    Tank.getPlayer().setPlayerY(newY);
-                }else if(!collX)
-                    Tank.getPlayer().setPlayerX(Tank.getPlayer().getPlayerX()+(float)x * strength * Tank.speedMultiplier / 2);
-                else
-                    Tank.getPlayer().setPlayerY(Tank.getPlayer().getPlayerY() + (float) -y * strength * Tank.speedMultiplier / 2);
+                if(!collX && !collY){ //If the tank doesn't collide, normal speed
+                    player1.setPosX(newX);
+                    player1.setPosY(newY);
+                }else if(!collX) //If the tank collides with Y (sides), X speed /2
+                    player1.setPosX(player1.getPosX() + (float)x * strength * Tank.speedMultiplier / 2);
+                else //If the tank collides with X (top/bot), Y speed /2
+                    player1.setPosY(player1.getPosY() + (float)-y * strength * Tank.speedMultiplier / 2);
             }
         });
 
         //Create joystick for player 2 tank's movement
-        final JoystickView joystick2 = findViewById(R.id.joystick2);
-        joystick2.setOnMoveListener(new JoystickView.OnMoveListener() {
+        final JoystickView joystickP2 = findViewById(R.id.joystick2);
+        joystickP2.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                //Log.d(LOG_TAG, "joystick move. Angle:" + angle);
-                Tank.getPlayer2().setPlayer2Rotation(90-angle);
+                player2.setRotation(90-angle);
                 double x = Math.cos(Math.toRadians(angle));
                 double y = Math.sin(Math.toRadians(angle));
-                //Log.d(LOG_TAG, "x: " + x + "   y: " + y);
-                float newX = Tank.getPlayer2().getPlayer2X()+(float)x * strength * Tank.speedMultiplier;
-                float newY = Tank.getPlayer2().getPlayer2Y()+(float)-y * strength * Tank.speedMultiplier;
+                float newX = player2.getPosX()+(float)x * strength * Tank.speedMultiplier;
+                float newY = player2.getPosY()+(float)-y * strength * Tank.speedMultiplier;
 
                 boolean collX = checkCollisionX(newX);
                 boolean collY = checkCollisionY(newY);
 
                 if(!collX && !collY){
-                    Tank.getPlayer2().setPlayer2X(newX);
-                    Tank.getPlayer2().setPlayer2Y(newY);
+                    player2.setPosX(newX);
+                    player2.setPosY(newY);
                 }else if(!collX)
-                    Tank.getPlayer2().setPlayer2X(Tank.getPlayer2().getPlayer2X()+(float)x * strength * Tank.speedMultiplier / 2);
+                    player2.setPosX(player2.getPosX() + (float)x * strength * Tank.speedMultiplier /2);
                 else
-                    Tank.getPlayer2().setPlayer2Y(Tank.getPlayer2().getPlayer2Y() + (float) -y * strength * Tank.speedMultiplier / 2);
+                    player2.setPosY(player2.getPosY() + (float)y * strength * Tank.speedMultiplier /2);
             }
         });
     }
@@ -123,6 +118,9 @@ public class LocalGameActivity extends AppCompatActivity {
         findViewById(R.id.quitButton).setVisibility(View.VISIBLE);
         findViewById(R.id.resumeButton).setVisibility(View.VISIBLE);
         findViewById(R.id.joystick).setEnabled(false);
+        findViewById(R.id.joystick2).setEnabled(false);
+        findViewById(R.id.fireButton).setEnabled(false);
+        findViewById(R.id.fireButton2).setEnabled(false);
         findViewById(R.id.pauseButton).setVisibility(View.INVISIBLE);
     }
 
@@ -132,42 +130,38 @@ public class LocalGameActivity extends AppCompatActivity {
         findViewById(R.id.quitButton).setVisibility(View.INVISIBLE);
         findViewById(R.id.resumeButton).setVisibility(View.INVISIBLE);
         findViewById(R.id.joystick).setEnabled(true);
+        findViewById(R.id.joystick2).setEnabled(true);
+        findViewById(R.id.fireButton).setEnabled(true);
+        findViewById(R.id.fireButton2).setEnabled(true);
         findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
     }
 
 
     public void fireBullet(View view){
-        fireBullet(view, 1);
+        fireBullet(view, player1);
     }
 
     public void fireBullet2(View view){
-        fireBullet(view, 2);
+        fireBullet(view, player2);
     }
 
-    public void fireBullet(View view, int playerN) {
+    public void fireBullet(View view, Tank player) {
         final ImageView bullet = new ImageView(this);
         bullet.setImageResource(R.drawable.bullet1);
-        final ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.localGameLayout);
+        final ConstraintLayout layout = findViewById(R.id.localGameLayout);
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
         );
-        float angle;
-        if(playerN==1)
-            angle = Tank.getPlayer().getPlayerRotation()-90;
-        else
-            angle = Tank.getPlayer2().getPlayer2Rotation()-90;
+
+        float angle = player.getRotation()-90;
         final double x = Math.cos(Math.toRadians(angle));
         final double y = Math.sin(Math.toRadians(angle));
         bullet.setScaleX(0.15f);
         bullet.setScaleY(0.15f);
-        if(playerN==1) {
-            bullet.setX(Tank.getPlayer().getPlayerX());
-            bullet.setY(Tank.getPlayer().getPlayerY()+20);
-        }else{
-            bullet.setX(Tank.getPlayer2().getPlayer2X());
-            bullet.setY(Tank.getPlayer2().getPlayer2Y()+20);
-        }
+
+        bullet.setX(player.getPosX());
+        bullet.setY(player.getPosY()+20);
         bullet.setRotation(angle-90);
         layout.addView(bullet, layoutParams);
 
