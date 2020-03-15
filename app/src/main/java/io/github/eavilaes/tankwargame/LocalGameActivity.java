@@ -1,16 +1,22 @@
 package io.github.eavilaes.tankwargame;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.graphics.Point;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 public class LocalGameActivity extends AppCompatActivity {
+
+    private static final float bulletSpeedMultiplier = 50.0f;
 
     Point size = new Point();
     private int W;
@@ -89,7 +95,6 @@ public class LocalGameActivity extends AppCompatActivity {
                     Tank.getPlayer2().setPlayer2Y(Tank.getPlayer2().getPlayer2Y() + (float) -y * strength * Tank.speedMultiplier / 2);
             }
         });
-
     }
 
     public void finishGame(View view) {
@@ -130,4 +135,59 @@ public class LocalGameActivity extends AppCompatActivity {
         findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
     }
 
+
+    public void fireBullet(View view){
+        fireBullet(view, 1);
+    }
+
+    public void fireBullet2(View view){
+        fireBullet(view, 2);
+    }
+
+    public void fireBullet(View view, int playerN) {
+        final ImageView bullet = new ImageView(this);
+        bullet.setImageResource(R.drawable.bullet1);
+        final ConstraintLayout layout = (ConstraintLayout)findViewById(R.id.localGameLayout);
+        ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
+                ConstraintLayout.LayoutParams.WRAP_CONTENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
+        );
+        float angle;
+        if(playerN==1)
+            angle = Tank.getPlayer().getPlayerRotation()-90;
+        else
+            angle = Tank.getPlayer2().getPlayer2Rotation()-90;
+        final double x = Math.cos(Math.toRadians(angle));
+        final double y = Math.sin(Math.toRadians(angle));
+        bullet.setScaleX(0.15f);
+        bullet.setScaleY(0.15f);
+        if(playerN==1) {
+            bullet.setX(Tank.getPlayer().getPlayerX());
+            bullet.setY(Tank.getPlayer().getPlayerY()+20);
+        }else{
+            bullet.setX(Tank.getPlayer2().getPlayer2X());
+            bullet.setY(Tank.getPlayer2().getPlayer2Y()+20);
+        }
+        bullet.setRotation(angle-90);
+        layout.addView(bullet, layoutParams);
+
+        final Handler handler = new Handler();
+        final int delay = 50; //milliseconds
+
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                bullet.setX((float) (bullet.getX() + x * bulletSpeedMultiplier));
+                bullet.setY((float) (bullet.getY() + y * bulletSpeedMultiplier));
+
+                if(!checkCollisionX(bullet.getX()) && !checkCollisionY(bullet.getY()))
+                    handler.postDelayed(this, delay);
+                else {
+                    Log.d(LOG_TAG, "Bullet collision");
+                    layout.removeView(bullet);
+
+                }
+            }
+        }, delay);
+
+    }
 }

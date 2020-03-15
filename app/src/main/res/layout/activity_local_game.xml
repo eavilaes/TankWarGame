@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LocalGameActivity">
+    tools:context=".LocalGameActivity"
+    android:id="@+id/localGameLayout">
 
     <ImageView
         android:id="@+id/tank_player"
@@ -101,5 +102,31 @@
         custom:layout_constraintRight_toRightOf="parent"
         android:layout_marginRight="15dp"
         android:layout_marginTop="10dp" />
+
+    <ImageButton
+        android:id="@+id/fireButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bullet1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:rotation="90"
+        android:alpha="0.8"
+        android:onClick="fireBullet"/>
+
+    <ImageButton
+        android:id="@+id/fireButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/bullet1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="16dp"
+        android:layout_marginRight="16dp"
+        android:rotation="270"
+        android:alpha="0.8"
+        android:onClick="fireBullet2"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
