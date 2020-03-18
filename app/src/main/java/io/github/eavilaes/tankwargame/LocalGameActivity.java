@@ -66,13 +66,14 @@ public class LocalGameActivity extends AppCompatActivity {
 
                 boolean collX = checkCollisionX(newX);
                 boolean collY = checkCollisionY(newY);
+                boolean collision = CollisionSystem.getInstance().checkCollisions(player1);
 
-                if(!collX && !collY){ //If the tank doesn't collide, normal speed
+                if(!collision && !collX && !collY){ //If the tank doesn't collide, normal speed
                     player1.setPosX(newX);
                     player1.setPosY(newY);
-                }else if(!collX) //If the tank collides with Y (sides), X speed /2
+                }else if(!collision && !collX) //If the tank collides with Y (sides), X speed /2
                     player1.setPosX(player1.getPosX() + (float)x * strength * Tank.speedMultiplier / 2);
-                else //If the tank collides with X (top/bot), Y speed /2
+                else if(!collision)//If the tank collides with X (top/bot), Y speed /2
                     player1.setPosY(player1.getPosY() + (float)-y * strength * Tank.speedMultiplier / 2);
             }
         });
@@ -90,10 +91,13 @@ public class LocalGameActivity extends AppCompatActivity {
 
                 boolean collX = checkCollisionX(newX);
                 boolean collY = checkCollisionY(newY);
+                boolean collision = CollisionSystem.getInstance().checkCollisions(player2);
 
-                if(!collX && !collY){
+                if(!collision && !collX && !collY){
                     player2.setPosX(newX);
                     player2.setPosY(newY);
+                }else if(collision && !collX && !collY){
+                    Log.d(LOG_TAG, "Collision with other tank");
                 }else if(!collX)
                     player2.setPosX(player2.getPosX() + (float)x * strength * Tank.speedMultiplier /2);
                 else
