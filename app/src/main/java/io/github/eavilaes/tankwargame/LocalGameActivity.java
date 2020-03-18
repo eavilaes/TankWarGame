@@ -15,20 +15,20 @@ import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 public class LocalGameActivity extends AppCompatActivity {
 
-    private static final float bulletSpeedMultiplier = 50.0f;
+    private static final String LOG_TAG = "LocalGameActivity";
+    ConstraintLayout layout;
 
+    private static final float bulletSpeedMultiplier = 50.0f;
+    Tank player1, player2;
     Point size = new Point();
     private int W;
     private int H;
-
-    Tank player1, player2;
-
-    private static final String LOG_TAG = "LocalGameActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_local_game);
+        layout = findViewById(R.id.localGameLayout);
 
         //Enable fullscreen to hide status bar. Action bar is already hidden because of the app's theme.
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -38,12 +38,22 @@ public class LocalGameActivity extends AppCompatActivity {
         W = size.x;
         H = size.y;
 
+        //Create tanks and set rotations
         player1 = new Tank((ImageView)findViewById(R.id.tank_player));
         player2 = new Tank((ImageView)findViewById(R.id.tank_player2));
+        Log.d(LOG_TAG, player1.toString());
         player1.setRotation(90);
         player2.setRotation(270);
 
-        //Create joystick for tank's movement
+        //Add outer walls to the collision system
+        CollisionSystem collSys = CollisionSystem.getInstance();
+        collSys.addCollider(new Collider(true, findViewById(R.id.wallN)));
+        collSys.addCollider(new Collider(true, findViewById(R.id.wallS)));
+        collSys.addCollider(new Collider(true, findViewById(R.id.wallE)));
+        collSys.addCollider(new Collider(true, findViewById(R.id.wallW)));
+
+
+        //Create joystick 1 for tank's movement
         final JoystickView joystickP1 = findViewById(R.id.joystick);
         joystickP1.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
@@ -90,24 +100,33 @@ public class LocalGameActivity extends AppCompatActivity {
                     player2.setPosY(player2.getPosY() + (float)y * strength * Tank.speedMultiplier /2);
             }
         });
-    }
+    } // -- End onCreate() --
 
+    //Finish the game and return to the previous activity.
     public void finishGame(View view) {
         finish();
     }
 
-    boolean checkCollisionX(float newX){
-        return !(newX > 20) || !(newX < W - 115);   //TODO: Try to change it for the tank's dimensions.
+    boolean checkCollisions(int id){
+        return CollisionSystem.getInstance().checkCollisions(id);
     }
 
+    //Check for collisions on the X axis of movement
+    boolean checkCollisionX(float newX){
+        return !(newX > 20) || !(newX < W - 115);
+    }
+
+    //Check for collisions on the Y axis of movement
     boolean checkCollisionY(float newY){
         return !(newY > 0) || !(newY < H - 140);
     }
 
+    //Pause the game and open a pause menu
     public void pauseGame(View view) {
         onPause();
     }
 
+    //Resume the game hiding the pause menu
     public void resumeGame(View view) {
         onResume();
     }
@@ -136,24 +155,29 @@ public class LocalGameActivity extends AppCompatActivity {
         findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
     }
 
-
+    //Player 1 calls this method when firing
     public void fireBullet(View view){
         fireBullet(view, player1);
     }
 
+    //Player 2 calls this method when firing
     public void fireBullet2(View view){
         fireBullet(view, player2);
     }
 
+    //Manage the bullets fired
     public void fireBullet(View view, Tank player) {
         final ImageView bullet = new ImageView(this);
         bullet.setImageResource(R.drawable.bullet1);
-        final ConstraintLayout layout = findViewById(R.id.localGameLayout);
         ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
                 ConstraintLayout.LayoutParams.WRAP_CONTENT,
                 ConstraintLayout.LayoutParams.WRAP_CONTENT
         );
+        final Collider bulletC = new Collider(true, bullet);
+        bulletC.addDoesntAffect(player);
+        CollisionSystem.getInstance().addCollider(bulletC);
 
+        //Get the angle of the tank and calculate X and Y strengths
         float angle = player.getRotation()-90;
         final double x = Math.cos(Math.toRadians(angle));
         final double y = Math.sin(Math.toRadians(angle));
@@ -165,20 +189,22 @@ public class LocalGameActivity extends AppCompatActivity {
         bullet.setRotation(angle-90);
         layout.addView(bullet, layoutParams);
 
+        //Handler to create a thread to control the bullet
         final Handler handler = new Handler();
-        final int delay = 50; //milliseconds
+        final int delay = 50; //Update delay in milliseconds
 
         handler.postDelayed(new Runnable(){
             public void run(){
                 bullet.setX((float) (bullet.getX() + x * bulletSpeedMultiplier));
                 bullet.setY((float) (bullet.getY() + y * bulletSpeedMultiplier));
 
-                if(!checkCollisionX(bullet.getX()) && !checkCollisionY(bullet.getY()))
+                //if(!checkCollisionX(bullet.getX()) && !checkCollisionY(bullet.getY()))
+                if(!checkCollisions(bulletC.getId()))
                     handler.postDelayed(this, delay);
                 else {
                     Log.d(LOG_TAG, "Bullet collision");
                     layout.removeView(bullet);
-
+                    CollisionSystem.getInstance().removeCollider(bulletC);
                 }
             }
         }, delay);
