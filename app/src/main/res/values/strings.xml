@@ -9,4 +9,6 @@
     <string name="_1vs1_local">1vs1 local</string>
     <string name="player_vs_cpu">Player vs CPU</string>
     <string name="_1vs1_online">1vs1 Online</string>
+    <string name="score">Score</string>
+    <string name="_0">0</string>
 </resources>
