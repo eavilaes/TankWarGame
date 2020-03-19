@@ -103,7 +103,6 @@
         android:background="@color/colorWalls" />
 
 
-
     <!--Tanks-->
     <ImageView
         android:id="@+id/tank_player"

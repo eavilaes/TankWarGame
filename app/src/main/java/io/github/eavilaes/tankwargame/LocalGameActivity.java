@@ -50,10 +50,10 @@ public class LocalGameActivity extends AppCompatActivity {
 
         //Add outer walls to the collision system
         CollisionSystem collSys = CollisionSystem.getInstance();
-        collSys.addCollider(new Collider(true, findViewById(R.id.wallN)));
-        collSys.addCollider(new Collider(true, findViewById(R.id.wallS)));
-        collSys.addCollider(new Collider(true, findViewById(R.id.wallE)));
-        collSys.addCollider(new Collider(true, findViewById(R.id.wallW)));
+        collSys.addCollider(new Wall(findViewById(R.id.wallN)));
+        collSys.addCollider(new Wall(findViewById(R.id.wallS)));
+        collSys.addCollider(new Wall(findViewById(R.id.wallE)));
+        collSys.addCollider(new Wall(findViewById(R.id.wallW)));
 
 
         //Create joystick 1 for tank's movement
@@ -61,23 +61,17 @@ public class LocalGameActivity extends AppCompatActivity {
         joystickP1.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                player1.setRotation(90-angle);
                 double x = Math.cos(Math.toRadians(angle));
                 double y = Math.sin(Math.toRadians(angle));
                 float newX = player1.getPosX()+(float)x * strength * Tank.speedMultiplier;
                 float newY = player1.getPosY()+(float)-y * strength * Tank.speedMultiplier;
 
-                boolean collX = checkCollisionX(newX);
-                boolean collY = checkCollisionY(newY);
-                boolean collision = CollisionSystem.getInstance().checkCollisions(player1);
-
-                if(!collision && !collX && !collY){ //If the tank doesn't collide, normal speed
+                if(!CollisionSystem.getInstance().checkCollisions(player1, newX, newY)){
+                    player1.setRotation(90-angle);
                     player1.setPosX(newX);
                     player1.setPosY(newY);
-                }else if(!collision && !collX) //If the tank collides with Y (sides), X speed /2
-                    player1.setPosX(player1.getPosX() + (float)x * strength * Tank.speedMultiplier / 2);
-                else if(!collision)//If the tank collides with X (top/bot), Y speed /2
-                    player1.setPosY(player1.getPosY() + (float)-y * strength * Tank.speedMultiplier / 2);
+                    CollisionSystem.getInstance().fixTankRotationCollision(player1);
+                }
             }
         });
 
@@ -86,27 +80,20 @@ public class LocalGameActivity extends AppCompatActivity {
         joystickP2.setOnMoveListener(new JoystickView.OnMoveListener() {
             @Override
             public void onMove(int angle, int strength) {
-                player2.setRotation(90-angle);
                 double x = Math.cos(Math.toRadians(angle));
                 double y = Math.sin(Math.toRadians(angle));
                 float newX = player2.getPosX()+(float)x * strength * Tank.speedMultiplier;
                 float newY = player2.getPosY()+(float)-y * strength * Tank.speedMultiplier;
 
-                boolean collX = checkCollisionX(newX);
-                boolean collY = checkCollisionY(newY);
-                boolean collision = CollisionSystem.getInstance().checkCollisions(player2);
-
-                if(!collision && !collX && !collY){
+                if(!CollisionSystem.getInstance().checkCollisions(player2, newX, newY)){
+                    player2.setRotation(90-angle);
                     player2.setPosX(newX);
                     player2.setPosY(newY);
-                }else if(collision && !collX && !collY){
-                    Log.d(LOG_TAG, "Collision with other tank");
-                }else if(!collX)
-                    player2.setPosX(player2.getPosX() + (float)x * strength * Tank.speedMultiplier /2);
-                else
-                    player2.setPosY(player2.getPosY() + (float)y * strength * Tank.speedMultiplier /2);
+                    CollisionSystem.getInstance().fixTankRotationCollision(player2);
+                }
             }
         });
+
     } // -- End onCreate() --
 
     //Finish the game and return to the previous activity.
@@ -114,18 +101,8 @@ public class LocalGameActivity extends AppCompatActivity {
         finish();
     }
 
-    boolean checkCollisions(int id){
-        return CollisionSystem.getInstance().checkCollisions(id);
-    }
-
-    //Check for collisions on the X axis of movement
-    boolean checkCollisionX(float newX){
-        return !(newX > 20) || !(newX < W - 115);
-    }
-
-    //Check for collisions on the Y axis of movement
-    boolean checkCollisionY(float newY){
-        return !(newY > 0) || !(newY < H - 140);
+    boolean checkCollisions(int id, float newX, float newY){
+        return CollisionSystem.getInstance().checkCollisions(id, newX, newY);
     }
 
     //Pause the game and open a pause menu
@@ -221,7 +198,7 @@ public class LocalGameActivity extends AppCompatActivity {
                     bullet.setY((float) (bullet.getY() + y * bulletSpeedMultiplier));
 
                     //if(!checkCollisionX(bullet.getX()) && !checkCollisionY(bullet.getY()))
-                    if (!checkCollisions(bulletC.getId())) {
+                    if (!checkCollisions(bulletC.getId(), bullet.getX(), bullet.getY())) {
                         if ((System.nanoTime() - startTime) / NANOS_TO_SECONDS < MAX_BULLET_TIME) //Converting nanoseconds to seconds
                             handler.postDelayed(this, delay);
                     } else {

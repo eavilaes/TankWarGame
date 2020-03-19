@@ -12,12 +12,9 @@ class Collider {
     private static int lastId=0;
 
     private int id;
-    private float height;
-    private float width;
     private ImageView imageView;
-    private View view;
     private boolean restrictsMovement;
-    private List<Collider> doesntAffect;
+    private List<Collider> doesntAffect; //For bullets,
 
     Collider(boolean restrictsMovement, ImageView imageView){
         this.restrictsMovement=restrictsMovement;
@@ -28,7 +25,7 @@ class Collider {
         CollisionSystem.getInstance().addCollider(this);
     }
 
-    Collider(boolean restrictsMovement, View view){
+    Collider(boolean restrictsMovement){
         this.restrictsMovement=restrictsMovement;
         lastId++;
         id=lastId;
@@ -82,8 +79,6 @@ class Collider {
     void setHitRect(Rect rect){
         if(this.imageView!=null)
             this.imageView.getHitRect(rect);
-        else if(this.view!=null)
-            this.view.getHitRect(rect);
     }
 
     void addDoesntAffect(Collider c){
