@@ -49,6 +49,31 @@ public class CollisionSystem {
         return checkCollisions(c, newX, newY);
     }
 
+    //Returns true if the bullet collides with an enemy tank, false in any other case.
+    boolean checkBulletCollisions(Bullet b, float newX, float newY){
+        float oldX = b.getPosX();
+        float oldY = b.getPosY();
+        b.setPosX(newX);
+        b.setPosY(newY);
+
+        Rect rcB = new Rect();
+        b.setHitRect(rcB);
+        for (Collider c : colliders){
+            if (c instanceof Tank && !b.cantCollide(c)){
+                Rect rcT = new Rect();
+                c.setHitRect(rcT);
+                if(Rect.intersects(rcB, rcT)){
+                    b.setPosX(oldX);
+                    b.setPosY(oldY);
+                    return true;
+                }
+            }
+        }
+        b.setPosX(oldX);
+        b.setPosY(oldY);
+        return false;
+    }
+
     boolean checkCollisions(Collider c, float newX, float newY){
         if(!c.getRestrictsMovement()) //TODO change the collision system if the object can not stop the movement
             return false;
@@ -70,6 +95,8 @@ public class CollisionSystem {
                 }
             }
         }
+        c.setPosX(oldX);
+        c.setPosY(oldY);
         return false;
     }
 

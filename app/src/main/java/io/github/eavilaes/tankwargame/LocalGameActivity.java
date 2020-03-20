@@ -19,7 +19,6 @@ public class LocalGameActivity extends AppCompatActivity {
     private static final String LOG_TAG = "LocalGameActivity";
     ConstraintLayout layout;
 
-    private static final float bulletSpeedMultiplier = 50.0f;
     private static final int NANOS_TO_SECONDS = 1000000000;
     private static final int MAX_BULLET_TIME = 3; //seconds
     Tank player1, player2;
@@ -96,13 +95,9 @@ public class LocalGameActivity extends AppCompatActivity {
 
     } // -- End onCreate() --
 
-    //Finish the game and return to the previous activity.
-    public void finishGame(View view) {
-        finish();
-    }
-
-    boolean checkCollisions(int id, float newX, float newY){
-        return CollisionSystem.getInstance().checkCollisions(id, newX, newY);
+    @Override
+    public void onBackPressed() {
+        onPause();
     }
 
     //Pause the game and open a pause menu
@@ -113,6 +108,19 @@ public class LocalGameActivity extends AppCompatActivity {
     //Resume the game hiding the pause menu
     public void resumeGame(View view) {
         onResume();
+    }
+
+    //Finish the game and return to the previous activity.
+    public void finishGame(View view) {
+        finish();
+    }
+
+    boolean checkCollisions(int id, float newX, float newY){
+        return CollisionSystem.getInstance().checkCollisions(id, newX, newY);
+    }
+
+    boolean checkBulletCollision(Bullet b, float newX, float newY){
+        return CollisionSystem.getInstance().checkBulletCollisions(b, newX, newY);
     }
 
     @Override
@@ -149,42 +157,32 @@ public class LocalGameActivity extends AppCompatActivity {
         fireBullet(view, player2);
     }
 
-    void score(Tank player){
-        TextView scoreT;
-        if(player.getNPlayer()==1)
-            scoreT = findViewById(R.id.scoreP1);
-        else
-            scoreT = findViewById(R.id.scoreP2);
-        int score = Integer.parseInt(scoreT.getText().toString());
-        score++;
-        scoreT.setText(Integer.toString(score));
-    }
-
     //Manage the bullets fired
     public void fireBullet(View view, final Tank player) {
         if(player.getLastShot()==-1 || (System.nanoTime() - player.getLastShot())/NANOS_TO_SECONDS > player.getFiringCD()) {
-            player.newShot();
-            final ImageView bullet = new ImageView(this);
-            bullet.setImageResource(R.drawable.bullet1);
+            player.newShot(); //sets the timer for the player (shooting cooldown)
+            final ImageView bulletImg = new ImageView(this);
+            bulletImg.setImageResource(R.drawable.bullet1);
             ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(
                     ConstraintLayout.LayoutParams.WRAP_CONTENT,
                     ConstraintLayout.LayoutParams.WRAP_CONTENT
             );
-            final Collider bulletC = new Collider(true, bullet);
-            bulletC.addDoesntAffect(player);
+            final Bullet bulletC = new Bullet(true, bulletImg);
+            bulletC.addDoesntAffect(player); //The bullet won't hit the player shooting it
             CollisionSystem.getInstance().addCollider(bulletC);
 
             //Get the angle of the tank and calculate X and Y strengths
             float angle = player.getRotation() - 90;
             final double x = Math.cos(Math.toRadians(angle));
             final double y = Math.sin(Math.toRadians(angle));
-            bullet.setScaleX(0.15f);
-            bullet.setScaleY(0.15f);
+            bulletImg.setScaleX(0.15f);
+            bulletImg.setScaleY(0.15f);
 
-            bullet.setX(player.getPosX());
-            bullet.setY(player.getPosY() + 20);
-            bullet.setRotation(angle - 90);
-            layout.addView(bullet, layoutParams);
+            //Draw the bullet in its origin position
+            bulletImg.setX(player.getPosX());
+            bulletImg.setY(player.getPosY() + 20);
+            bulletImg.setRotation(angle - 90);
+            layout.addView(bulletImg, layoutParams);
 
             //Handler to create a thread to control the bullet
             final Handler handler = new Handler();
@@ -194,17 +192,16 @@ public class LocalGameActivity extends AppCompatActivity {
 
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    bullet.setX((float) (bullet.getX() + x * bulletSpeedMultiplier));
-                    bullet.setY((float) (bullet.getY() + y * bulletSpeedMultiplier));
+                    bulletImg.setX((float) (bulletImg.getX() + x * Bullet.bulletSpeedMultiplier));
+                    bulletImg.setY((float) (bulletImg.getY() + y * Bullet.bulletSpeedMultiplier));
 
-                    //if(!checkCollisionX(bullet.getX()) && !checkCollisionY(bullet.getY()))
-                    if (!checkCollisions(bulletC.getId(), bullet.getX(), bullet.getY())) {
+                    if (!checkBulletCollision(bulletC, bulletImg.getX(), bulletImg.getY())){
                         if ((System.nanoTime() - startTime) / NANOS_TO_SECONDS < MAX_BULLET_TIME) //Converting nanoseconds to seconds
                             handler.postDelayed(this, delay);
                     } else {
                         Log.d(LOG_TAG, "Bullet collision");
                         score(player);
-                        layout.removeView(bullet);
+                        layout.removeView(bulletImg);
                         CollisionSystem.getInstance().removeCollider(bulletC);
                     }
                 }
@@ -212,8 +209,14 @@ public class LocalGameActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        onPause();
+    void score(Tank player){
+        TextView scoreT;
+        if(player.getNPlayer()==1)
+            scoreT = findViewById(R.id.scoreP1);
+        else
+            scoreT = findViewById(R.id.scoreP2);
+        int score = Integer.parseInt(scoreT.getText().toString());
+        score++;
+        scoreT.setText(Integer.toString(score));
     }
 }
