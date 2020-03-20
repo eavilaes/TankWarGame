@@ -3,7 +3,7 @@ package io.github.eavilaes.tankwargame;
 import android.graphics.Rect;
 import android.view.View;
 
-public class Wall extends Collider {
+class Wall extends Collider {
 
     private View view;
 

@@ -1,7 +1,6 @@
 package io.github.eavilaes.tankwargame;
 
 import android.graphics.Rect;
-import android.view.View;
 import android.widget.ImageView;
 
 import java.util.LinkedList;
@@ -9,9 +8,6 @@ import java.util.List;
 
 class Collider {
 
-    private static int lastId=0;
-
-    private int id;
     private ImageView imageView;
     private boolean restrictsMovement;
     private List<Collider> doesntAffect; //For bullets,
@@ -20,36 +16,16 @@ class Collider {
         this.restrictsMovement=restrictsMovement;
         this.imageView=imageView;
         this.doesntAffect = new LinkedList<Collider>();
-        lastId++;
-        id=lastId;
         CollisionSystem.getInstance().addCollider(this);
     }
 
     Collider(boolean restrictsMovement){
         this.restrictsMovement=restrictsMovement;
-        lastId++;
-        id=lastId;
         CollisionSystem.getInstance().addCollider(this);
-    }
-
-    int getId(){
-        return this.id;
-    }
-
-    float getHeight(){
-        return this.imageView.getHeight();
-    }
-
-    float getWidth(){
-        return this.imageView.getWidth();
     }
 
     boolean getRestrictsMovement(){
         return restrictsMovement;
-    }
-
-    void setImageView(ImageView imageView){
-        this.imageView=imageView;
     }
 
     void setRotation(int angle){

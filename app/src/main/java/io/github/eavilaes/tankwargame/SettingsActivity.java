@@ -12,7 +12,7 @@ import android.widget.EditText;
 public class SettingsActivity extends AppCompatActivity {
 
     private static SharedPreferences sharedPreferences;
-    private static EditText username;
+    private EditText username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

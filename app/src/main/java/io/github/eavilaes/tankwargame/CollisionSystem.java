@@ -5,7 +5,7 @@ import android.graphics.Rect;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CollisionSystem {
+class CollisionSystem {
 
     private static List<Collider> colliders;
     private static CollisionSystem instance = null;
@@ -14,18 +14,16 @@ public class CollisionSystem {
         colliders = new LinkedList<Collider>();
     }
 
-    public static CollisionSystem getInstance(){
+    static CollisionSystem getInstance(){
         if(instance==null)
             instance = new CollisionSystem();
         return instance;
     }
 
-    boolean addCollider(Collider c){
+    void addCollider(Collider c){
         if(!colliders.contains(c)){
             colliders.add(c);
-            return true;
         }
-        return false;
     }
 
     void removeCollider(Collider c){
@@ -34,19 +32,6 @@ public class CollisionSystem {
         }catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    private Collider getCollider(int id){
-        for (Collider c : colliders){
-            if(c.getId()==id)
-                return c;
-        }
-        return null;
-    }
-
-    boolean checkCollisions(int id, float newX, float newY){
-        Collider c = getCollider(id);
-        return checkCollisions(c, newX, newY);
     }
 
     //Returns true if the bullet collides with an enemy tank, false in any other case.

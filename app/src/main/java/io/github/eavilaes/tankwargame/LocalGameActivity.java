@@ -3,7 +3,6 @@ package io.github.eavilaes.tankwargame;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,12 +18,9 @@ public class LocalGameActivity extends AppCompatActivity {
     private static final String LOG_TAG = "LocalGameActivity";
     ConstraintLayout layout;
 
-    private static final int NANOS_TO_SECONDS = 1000000000;
+    private static final float NANOS_TO_SECONDS = 1000000000;
     private static final int MAX_BULLET_TIME = 3; //seconds
     Tank player1, player2;
-    Point size = new Point();
-    private int W;
-    private int H;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,11 +30,6 @@ public class LocalGameActivity extends AppCompatActivity {
 
         //Enable fullscreen to hide status bar. Action bar is already hidden because of the app's theme.
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        //Get size of the screen to set limits
-        getWindowManager().getDefaultDisplay().getSize(size);
-        W = size.x;
-        H = size.y;
 
         //Create tanks and set rotations
         player1 = new Tank((ImageView)findViewById(R.id.tank_player),1);
@@ -115,10 +106,6 @@ public class LocalGameActivity extends AppCompatActivity {
         finish();
     }
 
-    boolean checkCollisions(int id, float newX, float newY){
-        return CollisionSystem.getInstance().checkCollisions(id, newX, newY);
-    }
-
     boolean checkBulletCollision(Bullet b, float newX, float newY){
         return CollisionSystem.getInstance().checkBulletCollisions(b, newX, newY);
     }
@@ -149,16 +136,16 @@ public class LocalGameActivity extends AppCompatActivity {
 
     //Player 1 calls this method when firing
     public void fireBullet(View view){
-        fireBullet(view, player1);
+        fireBullet(player1);
     }
 
     //Player 2 calls this method when firing
     public void fireBullet2(View view){
-        fireBullet(view, player2);
+        fireBullet(player2);
     }
 
     //Manage the bullets fired
-    public void fireBullet(View view, final Tank player) {
+    public void fireBullet(final Tank player) {
         if(player.getLastShot()==-1 || (System.nanoTime() - player.getLastShot())/NANOS_TO_SECONDS > player.getFiringCD()) {
             player.newShot(); //sets the timer for the player (shooting cooldown)
             final ImageView bulletImg = new ImageView(this);
@@ -217,6 +204,6 @@ public class LocalGameActivity extends AppCompatActivity {
             scoreT = findViewById(R.id.scoreP2);
         int score = Integer.parseInt(scoreT.getText().toString());
         score++;
-        scoreT.setText(Integer.toString(score));
+        scoreT.setText(String.valueOf(score));
     }
 }

@@ -13,7 +13,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private static final int SETTINGS_REQUEST = 10;
-    private static TextView username_textview;
+    private TextView username_textview;
     private static final String LOG_TAG = "MainActivity";
 
     @Override
