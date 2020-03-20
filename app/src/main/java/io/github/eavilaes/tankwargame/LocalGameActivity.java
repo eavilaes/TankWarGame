@@ -211,4 +211,9 @@ public class LocalGameActivity extends AppCompatActivity {
             }, delay);
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        onPause();
+    }
 }
