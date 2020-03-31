@@ -56,11 +56,65 @@ public class LocalGameActivity extends AppCompatActivity {
                 float newX = player1.getPosX()+(float)x * strength * Tank.speedMultiplier;
                 float newY = player1.getPosY()+(float)-y * strength * Tank.speedMultiplier;
 
-                if(!CollisionSystem.getInstance().checkCollisions(player1, newX, newY)){
+                final int tankFixRotation = 0;
+
+                boolean coll=false;
+
+                if(CollisionSystem.getInstance().xMovementLocked(player1, newX)){
+                    if(angle>90 && angle <270) { //moving towards left wall
+                        if (angle < 180) //a bit up
+                            angle -= tankFixRotation;
+                        else if (angle > 180) //a bit down
+                            angle += tankFixRotation;
+                        //check for overpassed vertical angle
+                        if  (angle<90)
+                            angle=90;
+                        else if (angle>270)
+                            angle=270;
+                    }else { //moving towards right wall
+                        if (angle > 0 && angle<90) //a bit up
+                            angle += tankFixRotation;
+                        else if (angle > 270)
+                            angle -= tankFixRotation;
+                        //check for overpassed vertical angle
+                        if (angle>90 && angle<180)
+                            angle=90;
+                        else if(angle>180 && angle<270)
+                            angle=270;
+                    }
+                    player1.setRotation(90-angle);
+                    player1.setPosY(newY);
+                    coll=true;
+                } /*if (CollisionSystem.getInstance().yMovementLocked(player1, newY)){
+                    if(angle>0 && angle <180) { //moving towards top wall
+                        if(angle >90) //a bit to the left
+                            angle+=tankFixRotation;
+                        else if (angle < 90) //a bit to the right
+                            angle-=tankFixRotation;
+                        //check for overpassed horizontal angle
+                        if (angle>180)
+                            angle=180;
+                        else if (angle<0)
+                            angle=0;
+                    } else { //moving towards bottom wall
+                        if (angle<270)
+                            angle-=tankFixRotation;
+                        else if(angle>270)
+                            angle+=tankFixRotation;
+                        //check for overpassed horizontal angle
+                        if(angle<180)
+                            angle=180;
+                        if(angle>=360)
+                            angle=0;
+                    }
+                    player1.setRotation(90-angle);
+                    player1.setPosX(newX);
+                    coll=true;
+                }*/
+                if(!coll){
                     player1.setRotation(90-angle);
                     player1.setPosX(newX);
                     player1.setPosY(newY);
-                    CollisionSystem.getInstance().fixTankRotationCollision(player1);
                 }
             }
         });
