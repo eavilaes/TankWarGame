@@ -103,4 +103,43 @@ class CollisionSystem {
             }
         }
     }
+
+    boolean xMovementLocked(Tank t, float newX){
+        float oldX = t.getPosX();
+        t.setPosX(newX);
+        Rect rcT = new Rect();
+        t.setHitRect(rcT);
+        for (Collider w : colliders){
+            if (w instanceof Wall){
+                Rect rcW = new Rect();
+                w.setHitRect(rcW);
+                if(Rect.intersects(rcT, rcW)){
+                    t.setPosX(oldX);
+                    return true;
+                }
+            }
+        }
+        t.setPosX(oldX);
+        return false;
+    }
+
+    boolean yMovementLocked(Tank t, float newY){
+        float oldY = t.getPosY();
+        t.setPosY(newY);
+        Rect rcT = new Rect();
+        t.setHitRect(rcT);
+        for (Collider w : colliders){
+            if (w instanceof Wall){
+                Rect rcW = new Rect();
+                w.setHitRect(rcW);
+                if(Rect.intersects(rcT, rcW)){
+                    t.setPosY(oldY);
+                    return true;
+                }
+            }
+        }
+        t.setPosY(oldY);
+        return false;
+    }
+
 }
