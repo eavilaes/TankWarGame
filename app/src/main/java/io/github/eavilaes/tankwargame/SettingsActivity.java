@@ -12,7 +12,7 @@ import android.widget.EditText;
 public class SettingsActivity extends AppCompatActivity {
 
     private static SharedPreferences sharedPreferences;
-    private EditText username;
+    private EditText username, usernameP2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +28,16 @@ public class SettingsActivity extends AppCompatActivity {
         username = findViewById(R.id.nameEditText);
         String username_local = sharedPreferences.getString("username_local", "Player");
         username.setText(username_local);
+
+        usernameP2 = findViewById(R.id.P2nameEditText);
+        String username_local2 = sharedPreferences.getString("username_localP2", "Player2");
+        usernameP2.setText(username_local2);
     }
 
     public void saveSettings(View view) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("username_local", username.getText().toString());
+        editor.putString("username_localP2", usernameP2.getText().toString());
         editor.apply();
         Intent ret = new Intent();
         ret.putExtra("newname", username.getText().toString());
