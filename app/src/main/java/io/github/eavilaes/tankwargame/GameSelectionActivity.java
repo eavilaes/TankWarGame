@@ -16,8 +16,8 @@ public class GameSelectionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game_selection);
     }
 
-    public void playGameLocal(View view) {
-        Intent game = new Intent(this, LocalGameActivity.class);
-        startActivity(game);
+    public void settingsGameLocal(View view) {
+        Intent settings = new Intent(this, GameSettingsActivity.class);
+        startActivity(settings);
     }
 }

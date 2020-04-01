@@ -12,4 +12,13 @@
     <string name="score">Score</string>
     <string name="_0">0</string>
     <string name="player_2_username">Player 2 username</string>
+    <string name="start_game">Start Game</string>
+    <string name="plus_symbol">+</string>
+    <string name="game_time_minutes">Game time</string>
+    <string name="_3">3</string>
+    <string name="minutes">minutes</string>
+    <string name="max_score">Max Score</string>
+    <string name="_10">10</string>
+    <string name="points">points</string>
+    <string name="unlimited">Unlimited</string>
 </resources>

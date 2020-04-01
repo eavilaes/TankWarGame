@@ -3,6 +3,7 @@ package io.github.eavilaes.tankwargame;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -18,10 +19,12 @@ public class LocalGameActivity extends AppCompatActivity {
     private static final String LOG_TAG = "LocalGameActivity";
     ConstraintLayout layout;
 
+    private static SharedPreferences sharedPreferences;
     private static final float NANOS_TO_SECONDS = 1000000000;
     private static final int MAX_BULLET_TIME = 3; //max bullet time in seconds
-    private static long GAME_TIME_MINUTES = 5; //max game time in minutes
-    private static long GAME_INITIAL_COUNTDOWN_MILLIS = 6000; //6 seconds initial countdown
+    private static int GAME_TIME_MINUTES = 5; //max game time in minutes
+    private static int GAME_MAX_SCORE = 10; //max game score (-1 means infinite)
+    private static long GAME_INITIAL_COUNTDOWN_MILLIS = 6000; //6 seconds initial countdown will create a 5-to-0 countdown
     private static long GAME_TIME_MILLIS = GAME_TIME_MINUTES * 60000 + GAME_INITIAL_COUNTDOWN_MILLIS;
     Tank player1, player2;
 
@@ -178,6 +181,13 @@ public class LocalGameActivity extends AppCompatActivity {
                 }
             }
         });
+
+        //Load max time and score from shared preferences
+        sharedPreferences = getSharedPreferences("SETTINGS_FILE", MODE_PRIVATE);
+        GAME_TIME_MINUTES = sharedPreferences.getInt("game_time", GAME_TIME_MINUTES);
+        GAME_TIME_MILLIS = GAME_TIME_MINUTES * 60000 + GAME_INITIAL_COUNTDOWN_MILLIS;
+        GAME_MAX_SCORE = sharedPreferences.getInt("game_score", GAME_MAX_SCORE);
+
 
         //Create timer handler
         timerTextView = (TextView) findViewById(R.id.timer);
