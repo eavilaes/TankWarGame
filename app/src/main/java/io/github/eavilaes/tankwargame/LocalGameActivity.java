@@ -3,6 +3,7 @@ package io.github.eavilaes.tankwargame;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -18,9 +19,48 @@ public class LocalGameActivity extends AppCompatActivity {
     private static final String LOG_TAG = "LocalGameActivity";
     ConstraintLayout layout;
 
+    private static SharedPreferences sharedPreferences;
     private static final float NANOS_TO_SECONDS = 1000000000;
-    private static final int MAX_BULLET_TIME = 3; //seconds
+    private static final int MAX_BULLET_TIME = 3; //max bullet time in seconds
+    private static int GAME_TIME_MINUTES = 5; //max game time in minutes
+    private static int GAME_MAX_SCORE = 10; //max game score (-1 means infinite)
+    private static long GAME_INITIAL_COUNTDOWN_MILLIS = 6000; //6 seconds initial countdown will create a 5-to-0 countdown
+    private static long GAME_TIME_MILLIS = GAME_TIME_MINUTES * 60000 + GAME_INITIAL_COUNTDOWN_MILLIS;
     Tank player1, player2;
+
+    TextView timerTextView, countdownTextView;
+    long startTime = 0;
+    Handler timerHandler = new Handler();
+    Runnable timerRunnable = new Runnable() {
+        @Override
+        public void run() {
+            long millis = GAME_TIME_MILLIS - (System.currentTimeMillis() - startTime);
+            int seconds = (int) (millis/1000);
+            int minutes = seconds / 60;
+            seconds = seconds % 60;
+
+            timerTextView.setText(String.format("%d:%02d", minutes, seconds));
+            timerHandler.postDelayed(this, 500);
+        }
+    };
+
+    Handler countdownHandler = new Handler();
+    Runnable countdownRunnable = new Runnable() {
+        @Override
+        public void run() {
+            long millis = GAME_INITIAL_COUNTDOWN_MILLIS - (System.currentTimeMillis() - startTime);
+            if(millis<0) {
+                countdownTextView.setVisibility(View.GONE);
+                resumeControls();
+            }
+            else{
+                pauseControls();
+                int seconds = (int) (millis/1000);
+                countdownTextView.setText(String.format("%d", seconds));
+                countdownHandler.postDelayed(this, 500);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +96,7 @@ public class LocalGameActivity extends AppCompatActivity {
                 float newX = player1.getPosX()+(float)x * strength * Tank.speedMultiplier;
                 float newY = player1.getPosY()+(float)-y * strength * Tank.speedMultiplier;
 
-                final int tankFixRotation = 0;
+                final int tankFixRotation = 0; //to move the tank a certain angle to search for better results.
 
                 boolean coll=false;
 
@@ -85,32 +125,7 @@ public class LocalGameActivity extends AppCompatActivity {
                     player1.setRotation(90-angle);
                     player1.setPosY(newY);
                     coll=true;
-                } /*if (CollisionSystem.getInstance().yMovementLocked(player1, newY)){
-                    if(angle>0 && angle <180) { //moving towards top wall
-                        if(angle >90) //a bit to the left
-                            angle+=tankFixRotation;
-                        else if (angle < 90) //a bit to the right
-                            angle-=tankFixRotation;
-                        //check for overpassed horizontal angle
-                        if (angle>180)
-                            angle=180;
-                        else if (angle<0)
-                            angle=0;
-                    } else { //moving towards bottom wall
-                        if (angle<270)
-                            angle-=tankFixRotation;
-                        else if(angle>270)
-                            angle+=tankFixRotation;
-                        //check for overpassed horizontal angle
-                        if(angle<180)
-                            angle=180;
-                        if(angle>=360)
-                            angle=0;
-                    }
-                    player1.setRotation(90-angle);
-                    player1.setPosX(newX);
-                    coll=true;
-                }*/
+                }
                 if(!coll){
                     player1.setRotation(90-angle);
                     player1.setPosX(newX);
@@ -129,14 +144,59 @@ public class LocalGameActivity extends AppCompatActivity {
                 float newX = player2.getPosX()+(float)x * strength * Tank.speedMultiplier;
                 float newY = player2.getPosY()+(float)-y * strength * Tank.speedMultiplier;
 
-                if(!CollisionSystem.getInstance().checkCollisions(player2, newX, newY)){
+                final int tankFixRotation = 0; //to move the tank a certain angle to search for better results.
+
+                boolean coll=false;
+
+                if(CollisionSystem.getInstance().xMovementLocked(player2, newX)){
+                    if(angle>90 && angle <270) { //moving towards left wall
+                        if (angle < 180) //a bit up
+                            angle -= tankFixRotation;
+                        else if (angle > 180) //a bit down
+                            angle += tankFixRotation;
+                        //check for overpassed vertical angle
+                        if  (angle<90)
+                            angle=90;
+                        else if (angle>270)
+                            angle=270;
+                    }else { //moving towards right wall
+                        if (angle > 0 && angle<90) //a bit up
+                            angle += tankFixRotation;
+                        else if (angle > 270)
+                            angle -= tankFixRotation;
+                        //check for overpassed vertical angle
+                        if (angle>90 && angle<180)
+                            angle=90;
+                        else if(angle>180 && angle<270)
+                            angle=270;
+                    }
+                    player2.setRotation(90-angle);
+                    player2.setPosY(newY);
+                    coll=true;
+                }
+                if(!coll){
                     player2.setRotation(90-angle);
                     player2.setPosX(newX);
                     player2.setPosY(newY);
-                    CollisionSystem.getInstance().fixTankRotationCollision(player2);
                 }
             }
         });
+
+        //Load max time and score from shared preferences
+        sharedPreferences = getSharedPreferences("SETTINGS_FILE", MODE_PRIVATE);
+        GAME_TIME_MINUTES = sharedPreferences.getInt("game_time", GAME_TIME_MINUTES);
+        GAME_TIME_MILLIS = GAME_TIME_MINUTES * 60000 + GAME_INITIAL_COUNTDOWN_MILLIS;
+        GAME_MAX_SCORE = sharedPreferences.getInt("game_score", GAME_MAX_SCORE);
+
+
+        //Create timer handler
+        timerTextView = (TextView) findViewById(R.id.timer);
+        startTime = System.currentTimeMillis();
+        timerHandler.postDelayed(timerRunnable, 0);
+
+        //Create countdown
+        countdownTextView = (TextView) findViewById(R.id.countdown);
+        countdownHandler.postDelayed(countdownRunnable, 0);
 
     } // -- End onCreate() --
 
@@ -164,11 +224,7 @@ public class LocalGameActivity extends AppCompatActivity {
         return CollisionSystem.getInstance().checkBulletCollisions(b, newX, newY);
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        findViewById(R.id.quitButton).setVisibility(View.VISIBLE);
-        findViewById(R.id.resumeButton).setVisibility(View.VISIBLE);
+    void pauseControls(){
         findViewById(R.id.joystick).setEnabled(false);
         findViewById(R.id.joystick2).setEnabled(false);
         findViewById(R.id.fireButton).setEnabled(false);
@@ -176,16 +232,38 @@ public class LocalGameActivity extends AppCompatActivity {
         findViewById(R.id.pauseButton).setVisibility(View.INVISIBLE);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        findViewById(R.id.quitButton).setVisibility(View.INVISIBLE);
-        findViewById(R.id.resumeButton).setVisibility(View.INVISIBLE);
+    void resumeControls(){
         findViewById(R.id.joystick).setEnabled(true);
         findViewById(R.id.joystick2).setEnabled(true);
         findViewById(R.id.fireButton).setEnabled(true);
         findViewById(R.id.fireButton2).setEnabled(true);
         findViewById(R.id.pauseButton).setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //Pause timer
+        timerHandler.removeCallbacks(timerRunnable);
+
+        //Freeze controls
+        findViewById(R.id.quitButton).setVisibility(View.VISIBLE);
+        findViewById(R.id.resumeButton).setVisibility(View.VISIBLE);
+        pauseControls();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //Resume timer
+        timerHandler.postDelayed(timerRunnable, 0);
+
+        //Unfreeze controls
+        findViewById(R.id.quitButton).setVisibility(View.INVISIBLE);
+        findViewById(R.id.resumeButton).setVisibility(View.INVISIBLE);
+        resumeControls();
     }
 
     //Player 1 calls this method when firing
