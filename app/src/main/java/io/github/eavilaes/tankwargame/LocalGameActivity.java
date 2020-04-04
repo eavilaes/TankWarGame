@@ -3,6 +3,7 @@ package io.github.eavilaes.tankwargame;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -217,7 +218,9 @@ public class LocalGameActivity extends AppCompatActivity {
 
     //Finish the game and return to the previous activity.
     public void finishGame(View view) {
-        finish();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     boolean checkBulletCollision(Bullet b, float newX, float newY){
@@ -337,5 +340,46 @@ public class LocalGameActivity extends AppCompatActivity {
         int score = Integer.parseInt(scoreT.getText().toString());
         score++;
         scoreT.setText(String.valueOf(score));
+        if(score == GAME_MAX_SCORE){
+            if(player.getNPlayer()==1)
+                maxScoreReached(1);
+            else
+                maxScoreReached(2);
+        }
+    }
+
+    void maxScoreReached(int player){
+        pauseControls();
+        if(player==1){
+            findViewById(R.id.winnerP1).setVisibility(View.VISIBLE);
+            findViewById(R.id.loserP2).setVisibility(View.VISIBLE);
+        }else{
+            findViewById(R.id.winnerP2).setVisibility(View.VISIBLE);
+            findViewById(R.id.loserP1).setVisibility(View.VISIBLE);
+        }
+
+        countdownTextView.setTextSize(100);
+        countdownTextView.setVisibility(View.VISIBLE);
+        timerTextView.setVisibility(View.GONE);
+        startTime = System.currentTimeMillis();
+        final Handler finishGameHandler = new Handler();
+        Runnable finishGameRunnable = new Runnable() {
+            @Override
+            public void run() {
+                long millis = GAME_INITIAL_COUNTDOWN_MILLIS - (System.currentTimeMillis() - startTime);
+                if(millis<0) {
+                    Intent intent = new Intent(LocalGameActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else{
+                    pauseControls();
+                    int seconds = (int) (millis/1000);
+                    countdownTextView.setText(String.format("%d", seconds));
+                    finishGameHandler.postDelayed(this, 500);
+                }
+            }
+        };
+        countdownHandler.postDelayed(finishGameRunnable, 0);
     }
 }

@@ -21,4 +21,5 @@
     <string name="_10">10</string>
     <string name="points">points</string>
     <string name="unlimited">Unlimited</string>
+    <string name="winner">Winner!</string>
 </resources>
