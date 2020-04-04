@@ -40,6 +40,9 @@ public class LocalGameActivity extends AppCompatActivity {
             int minutes = seconds / 60;
             seconds = seconds % 60;
 
+            if(minutes==0 && seconds==0)
+                finishGame();
+
             timerTextView.setText(String.format("%d:%02d", minutes, seconds));
             timerHandler.postDelayed(this, 500);
         }
@@ -217,10 +220,13 @@ public class LocalGameActivity extends AppCompatActivity {
     }
 
     //Finish the game and return to the previous activity.
-    public void finishGame(View view) {
+    public void finishGame(){
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+    public void finishGame(View view) {
+        finishGame();
     }
 
     boolean checkBulletCollision(Bullet b, float newX, float newY){
@@ -368,9 +374,7 @@ public class LocalGameActivity extends AppCompatActivity {
             public void run() {
                 long millis = GAME_INITIAL_COUNTDOWN_MILLIS - (System.currentTimeMillis() - startTime);
                 if(millis<0) {
-                    Intent intent = new Intent(LocalGameActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
+                    finishGame();
                 }
                 else{
                     pauseControls();
